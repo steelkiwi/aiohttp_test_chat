@@ -1,0 +1,12 @@
+# virtualenv
+.venv
+env
+
+# Python
+*.pyc
+*.pyo
+
+# Vim
+init.vim
+.vim/
+.vimrc
