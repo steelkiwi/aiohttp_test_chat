@@ -1,1 +1,9 @@
 aiohttp
+aiohttp_debugtoolbar
+aiohttp_jinja2
+aiohttp_session[aioredis]
+aiopg
+aioredis
+alembic
+jinja2
+sqlalchemy
