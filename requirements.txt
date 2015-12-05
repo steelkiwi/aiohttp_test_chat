@@ -5,5 +5,8 @@ aiohttp_session[aioredis]
 aiopg
 aioredis
 alembic
+cchardet
+ipython
+ipdb
 jinja2
 sqlalchemy
