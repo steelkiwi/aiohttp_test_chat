@@ -1,6 +1,7 @@
 #! /usr/bin/env python
 import asyncio
-
+import aiohttp_jinja2
+import jinja2
 from aiohttp import web
 from blog.views import blog_list
 from auth.views import login
@@ -9,6 +10,8 @@ from auth.views import login
 loop = asyncio.get_event_loop()
 app = web.Application(loop=loop)
 handler = app.make_handler()
+
+aiohttp_jinja2.setup(app, loader=jinja2.FileSystemLoader('templates'))
 
 # route part
 app.router.add_route('GET', '/', blog_list)
