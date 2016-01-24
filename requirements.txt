@@ -6,6 +6,7 @@ aiopg
 aioredis
 alembic
 cchardet
+envparse
 ipython
 ipdb
 jinja2
