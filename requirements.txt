@@ -4,10 +4,9 @@ aiohttp_jinja2
 aiohttp_session[aioredis]
 aiopg
 aioredis
-alembic
-cchardet
 envparse
 ipython
 ipdb
 jinja2
+psycopg2
 sqlalchemy
