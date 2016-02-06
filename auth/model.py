@@ -13,3 +13,4 @@ tbl = sa.Table('users', metadata,
 
 async def create_user_table(engine):
     await metadata.create_all(engine)
+    return True
