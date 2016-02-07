@@ -2,9 +2,17 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title></title>
+    <title>
+        {% block title %}
+        {% endblock %}
+    </title>
+    <link rel="icon" 
+            type="image/png" 
+            href="{{ app.router.static.url(filename='img/favicon.png') }}">
+    <script src="{{ app.router.static.url(filename='js/main.js') }}"></script>
 </head>
 <body>
-    <p>{{ content  }}</p>
+    {% block content%}
+    {% endblock %}
 </body>
 </html>

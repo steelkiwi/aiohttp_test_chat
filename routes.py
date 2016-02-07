@@ -1,8 +1,8 @@
-from blog.views import BlogList
+from chat.views import ChatList
 from auth.views import Login
 
 
 routes = [
-    ('GET', '/', BlogList),
+    ('GET', '/', ChatList),
     ('GET', '/login', Login)
 ]
