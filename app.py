@@ -10,19 +10,15 @@ from aiohttp import web
 
 from routes import routes
 from chat.views import WebSocket
-from envparse import env
 from middlewares import db_handler
+from settings import *
 
-
-env.read_envfile('.env')
-
-key = env.str('SECRET_KEY')
 
 async def init(loop):
     app = web.Application(loop=loop, middlewares=[
+        db_handler(),
+#         session_middleware(EncryptedCookieStorage(SECRET_KEY))
 #         aiohttp_debugtoolbar.middleware, 
-            db_handler(),
-#         session_middleware(EncryptedCookieStorage(key))
     ])
     handler = app.make_handler()
 
@@ -35,7 +31,7 @@ async def init(loop):
     app.router.add_static('/static', 'static', name='static')
     # end route part
 
-    serv_generator = loop.create_server(handler, '127.0.0.1', 8080)
+    serv_generator = loop.create_server(handler, SITE_HOST, SITE_PORT)
     return serv_generator, handler, app
 
 loop = asyncio.get_event_loop()
