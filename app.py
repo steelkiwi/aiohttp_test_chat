@@ -16,15 +16,15 @@ from settings import *
 
 async def init(loop):
     app = web.Application(loop=loop, middlewares=[
-        db_handler(),
-#         session_middleware(EncryptedCookieStorage(SECRET_KEY))
+         db_handler,
+#         session_middleware(EncryptedCookieStorage(SECRET_KEY)),
 #         aiohttp_debugtoolbar.middleware, 
     ])
     handler = app.make_handler()
 
 #     aiohttp_debugtoolbar.setup(app)
     aiohttp_jinja2.setup(app, loader=jinja2.FileSystemLoader('templates'))
-    sockjs.add_endpoint(app, prefix='/ws', handler=WebSocket)
+#     sockjs.add_endpoint(app, prefix='/ws', handler=WebSocket)
     # route part
     for route in routes:
         app.router.add_route(route[0], route[1], route[2])
