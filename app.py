@@ -10,13 +10,14 @@ from aiohttp import web
 
 from routes import routes
 from chat.views import WebSocket
-from middlewares import db_handler
+from middlewares import db_handler, authorize
 from settings import *
 
 
 async def init(loop):
     app = web.Application(loop=loop, middlewares=[
-         db_handler,
+#         db_handler,
+        authorize,
 #         session_middleware(EncryptedCookieStorage(SECRET_KEY)),
 #         aiohttp_debugtoolbar.middleware, 
     ])
@@ -27,7 +28,7 @@ async def init(loop):
 #     sockjs.add_endpoint(app, prefix='/ws', handler=WebSocket)
     # route part
     for route in routes:
-        app.router.add_route(route[0], route[1], route[2])
+        app.router.add_route(route[0], route[1], route[2], name=route[3])
     app.router.add_static('/static', 'static', name='static')
     # end route part
 

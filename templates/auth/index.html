@@ -1,1 +1,11 @@
 {% extends 'base.html' %}
+{% block content %}
+{{ conten }}
+<form method="post" action="login">
+    <input type="text" name="username">
+    <input type="text" name="email">
+    <input type="text" name="password">
+    <input type="text" name="password2">
+    <input type="button" value="Send">
+</form>
+{% endblock %}

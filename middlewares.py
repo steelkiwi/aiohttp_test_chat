@@ -1,4 +1,5 @@
 import asyncio
+from aiohttp import web
 from motor import motor_asyncio as ma
 from settings import *
 
@@ -18,4 +19,16 @@ async def db_handler(app, handler):
         response = await handler(request)
         client.close()
         return response
+    return middleware
+
+
+async def authorize(app, handler):
+    async def middleware(request):
+        if request.get("user"):
+            return await handler(request)
+        elif not request.path.startswith('/login'):
+            print(request.app.router.named_resources(), 'erouter')
+            url = request.app.router['login'].url()
+            return web.HTTPFound(url)
+
     return middleware

@@ -7,4 +7,8 @@ class Login(web.View):
     @aiohttp_jinja2.template('auth/index.html')
     async def get(self):
         print(self.request)
-        return {'content': 'You need to login my friend'}
+        return {'conten': 'You need to login my friend'}
+
+    async def post(self):
+        print(self.request)
+        return await web.response(b'post request')

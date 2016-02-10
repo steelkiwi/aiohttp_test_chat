@@ -3,6 +3,6 @@ from auth.views import Login
 
 
 routes = [
-    ('GET', '/', ChatList),
-    ('GET', '/login', Login)
+    ('GET', '/', ChatList, 'main'),
+    ('*', '/login', Login, 'login'),
 ]
