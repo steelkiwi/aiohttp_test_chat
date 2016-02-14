@@ -12,11 +12,11 @@ class User():
         self.db = db
         self.collection = self.db[USER_COLLECTION]
 
-    async def create_user(self, **kw):
-        print(kw)
-        self.email = kw.get('email')
-        self.login = kw.get('login')
-        self.password = kw.get('password')
+    async def create_user(self, data, **kw):
+        
+        self.email = data.get('email')
+        self.login = data.get('login')
+        self.password = data.get('password')
         user = await self.collection.find_one({'email': self.email})
         if not user:
             result = await self.collection.insert({'email': self.email, 'login': self.login, 'password': self.password})

@@ -10,7 +10,8 @@ class Login(web.View):
         return {'conten': 'You need to login my friend'}
 
     async def post(self):
-        print(self.request, dir(self.request))
         user = User(self.request.db)
-        result = user.create_user(self.request['POST'])
+        data = await self.request.post()
+        print(data)
+        result = await user.create_user(data)
         return web.response(result)
