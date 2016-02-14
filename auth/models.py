@@ -1,16 +1,27 @@
 import asyncio
-import sqlalchemy as sa
-
-metadata = sa.MetaData()
-
-tbl = sa.Table('users', metadata,
-    sa.Column('id', sa.Integer, primary_key=True),
-    sa.Column('username', sa.String(255)),
-    sa.Column('email', sa.String(255)),
-    sa.Column('password', sa.String(255)),
-)
+from settings import USER_COLLECTION
 
 
-async def create_user_table(engine):
-    await metadata.create_all(engine)
-    return True
+class User():
+    
+    email = None
+    login = None
+    password = None
+    
+    def __init__(self, db):
+        self.db = db
+        self.collection = self.db[USER_COLLECTION]
+
+    async def create_user(self, **kw):
+        print(kw)
+        self.email = kw.get('email')
+        self.login = kw.get('login')
+        self.password = kw.get('password')
+        user = await self.collection.find_one({'email': self.email})
+        if not user:
+            result = await self.collection.insert({'email': self.email, 'login': self.login, 'password': self.password})
+            print(result)
+        else:
+            result = b'User exists'
+        return result
+

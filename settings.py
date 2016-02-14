@@ -13,3 +13,4 @@ MONGO_USER = env.str('MONGO_USER')
 MONGO_PASS = env.str('MONGO_PASS')
 
 MESSAGE_COLLECTION = 'messages'
+USER_COLLECTION = 'users'

@@ -1,11 +1,21 @@
 {% extends 'base.html' %}
 {% block content %}
 {{ conten }}
-<form method="post" action="login">
-    <input type="text" name="username">
-    <input type="text" name="email">
-    <input type="text" name="password">
-    <input type="text" name="password2">
-    <input type="button" value="Send">
+<form method="post" action="login" autocomplete="on">
+    <p>Login<br>
+        <input title="Insert login" type="text" name="login">
+    </p>
+    <p>Email<br>
+        <input title="Insert email" type="text" name="email">
+    </p>
+    <p>Password<br>
+        <input title="Enter password" type="password" pattern="[A-Za-zА-Яа-я0-9]{8,}" name="password">
+    </p>
+    <p>Password check<br>
+        <input title="Re-enter password" type="password" pattern="[A-Za-zА-Яа-я0-9]{8,}" name="password2">
+    </p>
+    <p>
+        <input title="Send" type="submit" value="Send">
+    </p>
 </form>
 {% endblock %}

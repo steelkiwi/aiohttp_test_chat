@@ -2,10 +2,16 @@
 {% block title %}
 Main Chat page
 {% endblock %}
+{% block js %}
+    <script src="{{ app.router.static.url(filename='js/vendor/sockjs.min.js') }}"></script>
+{% endblock %}
 {% block content %}
 <div id='subscribe'></div>
 <form name="publish">
   <input type="text" name="message">
   <input type="submit" value="Send">
 </form>
+{% endblock %}
+{% block footer %}
+    <script src="{{ app.router.static.url(filename='js/main.js') }}"></script>
 {% endblock %}

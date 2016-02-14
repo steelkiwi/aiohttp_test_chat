@@ -16,10 +16,10 @@ from settings import *
 
 async def init(loop):
     app = web.Application(loop=loop, middlewares=[
-#         db_handler,
+        session_middleware(EncryptedCookieStorage(SECRET_KEY)),
         authorize,
-#         session_middleware(EncryptedCookieStorage(SECRET_KEY)),
 #         aiohttp_debugtoolbar.middleware, 
+        db_handler,
     ])
     handler = app.make_handler()
 

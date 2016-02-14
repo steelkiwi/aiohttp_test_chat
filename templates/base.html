@@ -9,14 +9,14 @@
     <link rel="icon" 
             type="image/png" 
             href="{{ app.router.static.url(filename='img/favicon.png') }}">
-    <script src="{{ app.router.static.url(filename='js/vendor/sockjs.min.js') }}"></script>
+    {% block js %}
+    {% endblock %}
 </head>
 <body>
     {% block content%}
     {% endblock %}
 </body>
 <footer>
-    <script src="{{ app.router.static.url(filename='js/main.js') }}"></script>
     {% block footer %}
     {% endblock %}
 </footer>
