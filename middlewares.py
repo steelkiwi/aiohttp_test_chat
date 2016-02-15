@@ -1,4 +1,3 @@
-import asyncio
 from aiohttp import web
 from aiohttp_session import get_session
 from motor import motor_asyncio as ma
@@ -26,8 +25,8 @@ async def authorize(app, handler):
         session = await get_session(request)
         if session.get("user"):
             return await handler(request)
-        elif not request.path.startswith('/login') and not request.path.startswith('/static/'):
-            url = request.app.router['login'].url()
+        elif not request.path.startswith('/sign') and not request.path.startswith('/static/'):
+            url = request.app.router['sign'].url()
             raise web.HTTPFound(url)
         else:
             return await handler(request)

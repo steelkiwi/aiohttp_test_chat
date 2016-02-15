@@ -1,7 +1,6 @@
-import asyncio
 from datetime import datetime
 import aiohttp_jinja2
-from aiohttp import web
+from aiohttp import web, MsgType
 from chat.models import Message
 
 
@@ -22,14 +21,14 @@ class WebSocket(web.View):
         print(wr)
         async for msg in wr:
             print(msg)
-            if msg.tp == aiohttp.MsgType.text:
+            if msg.tp == MsgType.text:
                 if msg.data == 'close':
                     await wr.close()
                 else:
                     message = Message(date=datetime.now(), message=msg.data, user=request.user)
                     print(message.save())
                     wr.send_str(msg.data + 'fggg')
-            elif msg.tp == aiohttp.MsgType.error:
+            elif msg.tp == MsgType.error:
                 print('socket closed with exception %s' % wr.exception())
         print('Socket connection closed')
         return wr

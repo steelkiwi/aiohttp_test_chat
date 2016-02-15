@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block content %}
+{{ conten }}
+<form method="post" action="sign" autocomplete="on">
+    <p>Login<br>
+        <input title="Insert login" type="text" name="login">
+    </p>
+    <p>Password<br>
+        <input title="Enter password" type="password" pattern="[A-Za-zА-Яа-я0-9]{8,}" name="password">
+    </p>
+    <p>
+        <input title="Send" type="submit" value="Send">
+    </p>
+</form>
+{% endblock %}
