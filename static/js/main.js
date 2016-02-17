@@ -1,4 +1,4 @@
-var sock = new SockJS("localhost:8080/ws/");
+var sock = new SockJS('http://' + window.location.host + '/ws', 'xhr-streaming', {debug:true});
 
 sock.onopen = function(){
     console.log('open')
