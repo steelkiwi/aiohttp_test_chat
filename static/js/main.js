@@ -24,3 +24,7 @@ function showMessage(message) {
   console.log(messageElem, 'messageElem');
   document.getElementById('subscribe').appendChild(messageElem);
 }
+
+document.getElementById('signout').addEventListener("click", function(e){
+    window.location.href = "signout"
+});

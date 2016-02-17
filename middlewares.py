@@ -22,11 +22,19 @@ async def db_handler(app, handler):
 
 async def authorize(app, handler):
     async def middleware(request):
+        def check_path(path):
+            result = True
+            for r in ['/login', '/static/', '/signin', '/signout']:
+                print(r, path.startswith(r), path)
+                if path.startswith(r):
+                    result = False
+            return result
+
         session = await get_session(request)
         if session.get("user"):
             return await handler(request)
-        elif not request.path.startswith('/sign') and not request.path.startswith('/static/'):
-            url = request.app.router['sign'].url()
+        elif check_path(request.path):
+            url = request.app.router['login'].url()
             raise web.HTTPFound(url)
         else:
             return await handler(request)

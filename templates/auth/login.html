@@ -5,17 +5,17 @@
     <p>Login<br>
         <input title="Insert login" type="text" name="login">
     </p>
-    <p>Email<br>
-        <input title="Insert email" type="text" name="email">
-    </p>
     <p>Password<br>
         <input title="Enter password" type="password" pattern="[A-Za-zА-Яа-я0-9]{8,}" name="password">
     </p>
-    <p>Password check<br>
-        <input title="Re-enter password" type="password" pattern="[A-Za-zА-Яа-я0-9]{8,}" name="password2">
-    </p>
     <p>
         <input title="Send" type="submit" value="Send">
+        <input id="signin" title="Sign In" type="button" value="Sign In">
     </p>
 </form>
+<script>
+document.getElementById('signin').addEventListener("click", function(e){
+    window.location.href = "signin"
+});
+</script>
 {% endblock %}
