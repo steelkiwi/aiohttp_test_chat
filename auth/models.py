@@ -11,7 +11,7 @@ class User():
         self.password = data.get('password')
 
     async def check_user(self, **kw):
-        return await self.collection.find_one({'email': self.email, 'password': self.password})
+        return await self.collection.find_one({'login': self.login})
 
     async def create_user(self, **kw):
         user = await self.check_user()

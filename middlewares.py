@@ -14,10 +14,6 @@ async def db_handler(app, handler):
         db = client[MONGO_DB_NAME]
         db.authenticate(MONGO_USER, MONGO_PASS)
         request.db = db
-        if request.path.startswith('/ws/'):
-            import ipdb; ipdb.set_trace() # BREAKPOINT
-            print(type(handler(request)))
-            return handler(request)
         response = await handler(request)
         client.close()
         return response
