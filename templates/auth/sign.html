@@ -2,42 +2,51 @@
 {% block js %}
 <script>
     $(document).ready(function(){
+
         $('#login').click(function(){
             window.location.href = "login"
         });
+
+        function showError(error){
+            $('#error').html(error)
+        }
+
         $('#submit').click(function(){
-            var login = $('#login').val(),
+            var login = $('#login_text').val(),
                 email = $('#email').val(),
                 password = $('#password'),
                 password2 = $('#password2');
-            if(password.val() != password2.val()){
-                var div = $('div').html('Passwords must be the same')
-                password.parent().prepend(div)
-                return
-            }
-            console.log(login, 'if pass the same');
-            $.post('signin', {'login': login, 'email': email, 'password': password.val()}, function(data){
-                if (data.success === 1){
-                    window.location.href = '/'
+            console.log(login, email, password.val(), password2.val());
+            if(password.val() === password2.val()){
+                console.log(login, 'if pass the same');
+                if (login && email && password){
+                    $.post('signin', {'login': login, 'email': email, 'password': password.val()}, function(data){
+                        console.log(data);
+                        if (data.error){
+                            showError(data.error)
+                        }else{
+                            window.location.href = '/'
+                        }
+                    });
                 }else{
-                    $('#error')
-                        .attr('value', data.message)
-                        .attr('type', 'text')
+                    showError('Please fill all fields')
                 }
-            });
+            }else{
+                showError('Passwords must be the same');
+            }
         });
     });
 </script>
 {% endblock %}
 {% block content %}
-<h2>
+<h4>
 {{ conten }}
-</h2>
-<form method="post" action="#" autocomplete="on">
-    <input type="hidden" id="error">
+</h4>
+<form autocomplete="on">
+    <div id="error" style="color: red;"></div>
     <div class="form-group">
         <label>Insert login
-            <input type="text" class="form-control" pattern="[A-Za-zА-Яа-я0-9]{3,}" placeholder="Login" id="login" required>
+            <input type="text" class="form-control" pattern="[A-Za-zА-Яа-я0-9]{3,}" placeholder="Login" id="login_text" required>
         </label>
     </div>
     <div class="form-group">
@@ -56,7 +65,7 @@
         </label>
     </div>
     <p>
-        <input class="btn btn-primary" id="submit" title="Send" type="submit" value="Send">
+        <input class="btn btn-primary" id="submit" title="Send" type="button" value="Send">
         <input class="btn btn-default" id="login" title="Login" type="button" value="Login">
     </p>
 </form>

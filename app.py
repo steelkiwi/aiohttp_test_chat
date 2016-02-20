@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 import asyncio
 import aiohttp_jinja2
-# import aiohttp_debugtoolbar
+import aiohttp_debugtoolbar
 import jinja2
 from aiohttp_session import session_middleware
 from aiohttp_session.cookie_storage import EncryptedCookieStorage
@@ -11,17 +11,30 @@ from routes import routes
 from middlewares import db_handler, authorize
 from settings import *
 
+async def shutdown(server, app, handler):
+#     sock = server.sockets[0]
+#     app.loop.remove_reader(sock.fileno())
+#     sock.close()
+
+    await handler.finish_connections(1.0)
+    print('bef server close')
+    server.close()
+    print('server close')
+    await server.wait_closed()
+    await app.finish()
+
 
 async def init(loop):
+
     app = web.Application(loop=loop, middlewares=[
         session_middleware(EncryptedCookieStorage(SECRET_KEY)),
         authorize,
-#         aiohttp_debugtoolbar.middleware,
         db_handler,
+#         aiohttp_debugtoolbar.middleware,
     ])
     handler = app.make_handler()
-
-#     aiohttp_debugtoolbar.setup(app)
+    if DEBUG:
+        aiohttp_debugtoolbar.setup(app)
     aiohttp_jinja2.setup(app, loader=jinja2.FileSystemLoader('templates'))
 
     # route part
@@ -36,15 +49,13 @@ async def init(loop):
 loop = asyncio.get_event_loop()
 serv_generator, handler, app = loop.run_until_complete(init(loop))
 serv = loop.run_until_complete(serv_generator)
-print('start server', serv.sockets[0].getsockname())
+sock = serv.sockets[0]
+print('start server', sock.getsockname())
 try:
     loop.run_forever()
 except KeyboardInterrupt:
-    print('Stop server begin')
+    print(' Stop server begin')
 finally:
-    loop.run_until_complete(handler.finish_connections(1.0))
-    serv.close()
-    loop.run_until_complete(serv.wait_closed())
-    loop.run_until_complete(app.finish())
-loop.close()
+    loop.run_until_complete(shutdown(serv, app, handler))
+    loop.close()
 print('Stop server end')

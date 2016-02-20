@@ -1,14 +1,21 @@
 $(document).ready(function(){
     var sock = new WebSocket('ws://' + window.location.host + '/ws');
 
-    sock.onopen = function(){
-        console.log('open')
+    // show message in div#subscribe
+    function showMessage(message) {
+      var messageElem = $('#subscribe')
+      messageElem.append(message);
     }
+
+    sock.onopen = function(){
+        showMessage('Connection to server started\n')
+    }
+
     // send message from form
     $('#submit').click(function() {
-        var msg = $('#message').val();
-        console.log(msg, 'onsubmit');
-        sock.send(msg);
+        var msg = $('#message');
+        sock.send(msg.val());
+        msg.val('').focus()
     });
 
     // income message handler
@@ -16,14 +23,7 @@ $(document).ready(function(){
       console.log(event, 'event');
       showMessage(event.data);
     };
-    
-    // show message in div#subscribe
-    function showMessage(message) {
-      var messageElem = $('#subscribe')
-      console.log(messageElem, 'messageElem');
-      messageElem.append(message);
-    }
-    
+
     $('#signout').click(function(){
         window.location.href = "signout"
     });

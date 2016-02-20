@@ -1,3 +1,4 @@
+from bson.objectid import ObjectId
 from settings import USER_COLLECTION
 
 
@@ -9,15 +10,23 @@ class User():
         self.email = data.get('email')
         self.login = data.get('login')
         self.password = data.get('password')
+        self.id = data.get('id')
 
     async def check_user(self, **kw):
         return await self.collection.find_one({'login': self.login})
 
+    async def get_login(self, **kw):
+        print(self.id)
+        user = await self.collection.find_one({'_id': ObjectId(self.id)})
+        return user.get('login')
+
     async def create_user(self, **kw):
         user = await self.check_user()
+        print(user, 'create_user')
         if not user:
+            print('not user')
             result = await self.collection.insert({'email': self.email, 'login': self.login, 'password': self.password})
             print(result, 'create_user')
         else:
-            result = b'User exists'
+            result = 'User exists'
         return result

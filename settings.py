@@ -2,6 +2,7 @@ from envparse import env
 
 env.read_envfile('.env')
 
+DEBUG = env.bool('DEBUG', default=False)
 
 SITE_HOST = env.str('SITE_HOST')
 SITE_PORT = env.int('SITE_PORT')

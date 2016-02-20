@@ -1,4 +1,6 @@
+import json
 from time import time
+from bson.objectid import ObjectId
 import aiohttp_jinja2
 from aiohttp_session import get_session
 from aiohttp import web
@@ -10,19 +12,15 @@ def redirect(request, router_name):
     raise web.HTTPFound(url)
 
 
-def set_session(session, result, request):
-    def session_user(user_id):
-        session['user'] = user_id
-        session['last_visit'] = time()
+def set_session(session, user_id, request):
+    session['user'] = str(user_id)
+    session['last_visit'] = time()
+    print(session)
+    redirect(request, 'main')
 
-    if isinstance(result, int):
-        session_user(result)
-        redirect(request, 'main')
-    elif isinstance(result, dict):
-        print(str(result['_id']))
-        session_user(str(result['_id']))
-        redirect(request, 'main')
-    return result
+
+def convert_json(message):
+    return json.dumps({'error': message})
 
 
 class Login(web.View):
@@ -39,9 +37,11 @@ class Login(web.View):
         user = User(self.request.db, data)
         result = await user.check_user()
         print(result, 'login')
-        session = await get_session(self.request)
-        resp = set_session(session, result, self.request)
-        return web.Response(success=0, message=resp)
+        if isinstance(result, dict):
+            session = await get_session(self.request)
+            set_session(session, str(result['_id']), self.request)
+        else:
+            return web.Response(content_type='application/json', text=convert_json(result))
 
 
 class SignIn(web.View):
@@ -57,9 +57,12 @@ class SignIn(web.View):
         data = await self.request.post()
         user = User(self.request.db, data)
         result = await user.create_user()
-        print(result, "sign")
-        session = await get_session(self.request)
-        return web.Response(success=0, message=set_session(session, result, self.request))
+        print(result, type(result), "sign")
+        if isinstance(result, ObjectId):
+            session = await get_session(self.request)
+            set_session(session, str(result), self.request)
+        else:
+            return web.Response(content_type='application/json', text=convert_json(result))
 
 
 class SignOut(web.View):
