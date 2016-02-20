@@ -1,27 +1,63 @@
 {% extends 'base.html' %}
+{% block js %}
+<script>
+    $(document).ready(function(){
+        $('#login').click(function(){
+            window.location.href = "login"
+        });
+        $('#submit').click(function(){
+            var login = $('#login').val(),
+                email = $('#email').val(),
+                password = $('#password'),
+                password2 = $('#password2');
+            if(password.val() != password2.val()){
+                var div = $('div').html('Passwords must be the same')
+                password.parent().prepend(div)
+                return
+            }
+            console.log(login, 'if pass the same');
+            $.post('signin', {'login': login, 'email': email, 'password': password.val()}, function(data){
+                if (data.success === 1){
+                    window.location.href = '/'
+                }else{
+                    $('#error')
+                        .attr('value', data.message)
+                        .attr('type', 'text')
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}
 {% block content %}
+<h2>
 {{ conten }}
-<form method="post" action="signin" autocomplete="on">
-    <p>Login<br>
-        <input title="Insert login" type="text" name="login">
-    </p>
-    <p>Email<br>
-        <input title="Insert email" type="text" name="email">
-    </p>
-    <p>Password<br>
-        <input title="Enter password" type="password" pattern="[A-Za-zА-Яа-я0-9]{8,}" name="password">
-    </p>
-    <p>Password check<br>
-        <input title="Re-enter password" type="password" pattern="[A-Za-zА-Яа-я0-9]{8,}" name="password2">
-    </p>
+</h2>
+<form method="post" action="#" autocomplete="on">
+    <input type="hidden" id="error">
+    <div class="form-group">
+        <label>Insert login
+            <input type="text" class="form-control" pattern="[A-Za-zА-Яа-я0-9]{3,}" placeholder="Login" id="login" required>
+        </label>
+    </div>
+    <div class="form-group">
+        <label>Email address
+            <input type="email" class="form-control" placeholder="Email", id="email" required>
+        </label>
+    </div>
+    <div class="form-group">
+        <label>Enter password
+            <input type="password" class="form-control" pattern="[A-Za-zА-Яа-я0-9]{8,}" placeholder="Password", id="password" required>
+        </label>
+    </div>
+    <div class="form-group">
+        <label>Password check
+            <input type="password" class="form-control" pattern="[A-Za-zА-Яа-я0-9]{8,}" placeholder="Password", id="password2" required>
+        </label>
+    </div>
     <p>
-        <input title="Send" type="submit" value="Send">
-        <input id="login" title="Login" type="button" value="Login">
+        <input class="btn btn-primary" id="submit" title="Send" type="submit" value="Send">
+        <input class="btn btn-default" id="login" title="Login" type="button" value="Login">
     </p>
 </form>
-<script>
-document.getElementById('login').addEventListener("click", function(e){
-    window.location.href = "login"
-});
-</script>
 {% endblock %}

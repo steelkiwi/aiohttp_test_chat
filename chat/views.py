@@ -1,7 +1,6 @@
 from datetime import datetime
 import aiohttp_jinja2
-import sockjs
-from aiohttp import web
+from aiohttp import web, MsgType
 from chat.models import Message
 
 
@@ -11,10 +10,21 @@ class ChatList(web.View):
         return {'conten': 'Some contents'}
 
 
-async def chat(msg, session):
-    if msg.tp == sockjs.MSG_OPEN:
-        session.manager.broadcast("Someone joined.")
-    elif msg.tp == sockjs.MSG_MESSAGE:
-        session.manager.broadcast(msg.data)
-    elif msg.tp == sockjs.MSG_CLOSED:
-        session.manager.broadcast("Someone left.")
+class WebSocket(web.View):
+    async def get(self):
+        ws = web.WebSocketResponse()
+        await ws.prepare(self.request)
+
+        async for msg in ws:
+            print(msg)
+            if msg.tp == MsgType.text:
+                if msg.data == 'close':
+                    await ws.close()
+                else:
+                    ws.send_str(msg.data + '/answer')
+            elif msg.tp == MsgType.error:
+                print('ws connection closed with exception %s' % ws.exception())
+
+        print('websocket connection closed')
+
+        return ws

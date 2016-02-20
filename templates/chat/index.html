@@ -1,20 +1,18 @@
 {% extends 'base.html' %}
+
 {% block title %}
 Main Chat page
 {% endblock %}
-{% block js %}
-    <script src="//cdn.jsdelivr.net/sockjs/1.0.3/sockjs.min.js"></script>
-{% endblock %}
+
 {% block content %}
-<div id='subscribe'></div>
-<form name="publish">
+<textarea id='subscribe' class="form-control" rows="15"></textarea>
     <p>
-        <input type="text" name="message">
-        <input type="submit" value="Send">
-        <input type="button", id="signout", value="Sign Out">
+        <input  type="text" id="message">
+        <input class="btn btn-primary" type="submit" id='submit' value="Send">
+        <input class="btn btn-default" type="button", id="signout", value="Sign Out">
     </p>
-</form>
 {% endblock %}
+
 {% block footer %}
     <script src="{{ app.router.static.url(filename='js/main.js') }}"></script>
 {% endblock %}

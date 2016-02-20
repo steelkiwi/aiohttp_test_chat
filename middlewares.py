@@ -6,7 +6,6 @@ from settings import *
 
 async def db_handler(app, handler):
     async def middleware(request):
-        print(request, type(handler), handler, 'db_handler')
         if request.path.startswith('/static/') or request.path.startswith('/_debugtoolbar'):
             response = await handler(request)
             return response
@@ -16,6 +15,8 @@ async def db_handler(app, handler):
         db.authenticate(MONGO_USER, MONGO_PASS)
         request.db = db
         if request.path.startswith('/ws/'):
+            import ipdb; ipdb.set_trace() # BREAKPOINT
+            print(type(handler(request)))
             return handler(request)
         response = await handler(request)
         client.close()
@@ -38,7 +39,6 @@ async def authorize(app, handler):
         elif check_path(request.path):
             url = request.app.router['login'].url()
             raise web.HTTPFound(url)
-        elif request.path.startswith('/ws/'):
             return handler(request)
         else:
             return await handler(request)

@@ -7,4 +7,3 @@ ipython
 ipdb
 jinja2
 motor
-sockjs

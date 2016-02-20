@@ -3,13 +3,11 @@ import asyncio
 import aiohttp_jinja2
 # import aiohttp_debugtoolbar
 import jinja2
-import sockjs
 from aiohttp_session import session_middleware
 from aiohttp_session.cookie_storage import EncryptedCookieStorage
 from aiohttp import web
 
 from routes import routes
-from chat.views import chat
 from middlewares import db_handler, authorize
 from settings import *
 
@@ -25,7 +23,6 @@ async def init(loop):
 
 #     aiohttp_debugtoolbar.setup(app)
     aiohttp_jinja2.setup(app, loader=jinja2.FileSystemLoader('templates'))
-    sockjs.add_endpoint(app, prefix='/ws/', handler=chat, name='chat', sockjs_cdn="//cdn.jsdelivr.net/sockjs/1.0.3/sockjs.min.js")
 
     # route part
     for route in routes:

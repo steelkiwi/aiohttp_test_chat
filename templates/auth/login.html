@@ -1,21 +1,47 @@
 {% extends 'base.html' %}
+{% block js %}
+ <script>
+    $(document).ready(function(){
+        $('#signin').click(function(){
+            window.location.href = "signin"
+        });
+        $('#submit').click(function(){
+            var login = $('#login').val(),
+                password = $('#password').val();
+            console.log(login, 'if pass the same');
+            $.post('login', {'login': login, 'password': password}, function(data){
+                if (data.success === 1){
+                    window.location.href = '/'
+                }else{
+                    $('#error')
+                        .attr('value', data.message)
+                        .attr('type', 'text')
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}
 {% block content %}
+<h2>
 {{ conten }}
-<form method="post" action="login" autocomplete="on">
-    <p>Login<br>
-        <input title="Insert login" type="text" name="login">
-    </p>
-    <p>Password<br>
-        <input title="Enter password" type="password" pattern="[A-Za-zА-Яа-я0-9]{8,}" name="password">
-    </p>
+</h2>
+<form method="post" action="#" autocomplete="on">
+    <input type="hidden" id="error">
+    <div class="form-group">
+        <label>Insert login
+            <input type="text" class="form-control" pattern="[A-Za-zА-Яа-я0-9]{3,}" placeholder="Login" id="login" required>
+        </label>
+    </div>
+
+    <div class="form-group">
+        <label>Enter password
+            <input type="password" class="form-control" pattern="[A-Za-zА-Яа-я0-9]{8,}" placeholder="Password", id="password" required>
+        </label>
+    </div>
     <p>
-        <input title="Send" type="submit" value="Send">
-        <input id="signin" title="Sign In" type="button" value="Sign In">
+        <input class="btn btn-primary" id="submit" title="Send" type="submit" value="Send">
+        <input class="btn btn-default" id="signin" title="Sign In" type="button" value="Sign In">
     </p>
 </form>
-<script>
-document.getElementById('signin').addEventListener("click", function(e){
-    window.location.href = "signin"
-});
-</script>
 {% endblock %}

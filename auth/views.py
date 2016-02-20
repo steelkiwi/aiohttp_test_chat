@@ -40,7 +40,8 @@ class Login(web.View):
         result = await user.check_user()
         print(result, 'login')
         session = await get_session(self.request)
-        return web.Response(body=set_session(session, result, self.request))
+        resp = set_session(session, result, self.request)
+        return web.Response(success=0, message=resp)
 
 
 class SignIn(web.View):
@@ -58,7 +59,7 @@ class SignIn(web.View):
         result = await user.create_user()
         print(result, "sign")
         session = await get_session(self.request)
-        return web.Response(body=set_session(session, result, self.request))
+        return web.Response(success=0, message=set_session(session, result, self.request))
 
 
 class SignOut(web.View):
