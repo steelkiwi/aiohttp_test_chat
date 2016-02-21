@@ -4,10 +4,17 @@
 Main Chat page
 {% endblock %}
 
+{% block head %}
+    <link href="{{ app.router.static.url(filename='css/chat.css') }}" rel="stylesheet">
+{% endblock %}
 {% block content %}
-<textarea id='subscribe' class="form-control" rows="15"></textarea>
+<div id='subscribe'>
+    {% for mes in messages%}
+        <p>{{ mes['msg'] }}</p>
+    {% endfor %}
+</div>
     <p>
-        <input  type="text" id="message">
+        <input  type="text" id="message" autocomplete="off">
         <input class="btn btn-primary" type="submit" id='submit' value="Send">
         <input class="btn btn-default" type="button", id="signout", value="Sign Out">
     </p>

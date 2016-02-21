@@ -11,17 +11,19 @@ from routes import routes
 from middlewares import db_handler, authorize
 from settings import *
 
-async def shutdown(server, app, handler):
-#     sock = server.sockets[0]
-#     app.loop.remove_reader(sock.fileno())
-#     sock.close()
 
-    await handler.finish_connections(1.0)
-    print('bef server close')
+async def on_shutdown(app):
+    for ws in app['websockets']:
+        await ws.close(code=1001, message='Server shutdown')
+
+
+async def shutdown(server, app, handler):
+
     server.close()
-    print('server close')
     await server.wait_closed()
-    await app.finish()
+    await app.shutdown()
+    await handler.finish_connections(10.0)
+    await app.cleanup()
 
 
 async def init(loop):
@@ -32,6 +34,7 @@ async def init(loop):
         db_handler,
 #         aiohttp_debugtoolbar.middleware,
     ])
+    app['websockets'] = []
     handler = app.make_handler()
     if DEBUG:
         aiohttp_debugtoolbar.setup(app)
@@ -42,6 +45,7 @@ async def init(loop):
         app.router.add_route(route[0], route[1], route[2], name=route[3])
     app.router.add_static('/static', 'static', name='static')
     # end route part
+    app.on_shutdown.append(on_shutdown)
 
     serv_generator = loop.create_server(handler, SITE_HOST, SITE_PORT)
     return serv_generator, handler, app
@@ -49,8 +53,7 @@ async def init(loop):
 loop = asyncio.get_event_loop()
 serv_generator, handler, app = loop.run_until_complete(init(loop))
 serv = loop.run_until_complete(serv_generator)
-sock = serv.sockets[0]
-print('start server', sock.getsockname())
+print('start server', serv.sockets[0].getsockname())
 try:
     loop.run_forever()
 except KeyboardInterrupt:

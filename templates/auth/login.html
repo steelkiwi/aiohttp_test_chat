@@ -1,36 +1,5 @@
 {% extends 'base.html' %}
-{% block js %}
- <script>
-    $(document).ready(function(){
 
-        $('#signin').click(function(){
-            window.location.href = "signin"
-        });
-
-        function showError(error){
-            $('#error').html(error)
-        }
-
-        $('#submit').click(function(){
-            var login = $('#login').val(),
-                password = $('#password').val();
-            console.log(login, 'if pass the same');
-            if(login && password){
-                $.post('login', {'login': login, 'password': password}, function(data){
-                    console.log(data);
-                    if (data.error){
-                        showError(data.error)
-                    }else{
-                        window.location.href = '/'
-                    }
-                });
-            }else{
-                showError('Please fill all fields')
-            }
-        });
-    });
-</script>
-{% endblock %}
 {% block content %}
 <h4>
 {{ conten }}
@@ -53,4 +22,8 @@
         <input class="btn btn-default" id="signin" title="Sign In" type="button" value="Sign In">
     </p>
 </form>
+{% endblock %}
+
+{% block footer %}
+<script src="{{ app.router.static.url(filename='js/login.js') }}"></script>
 {% endblock %}
