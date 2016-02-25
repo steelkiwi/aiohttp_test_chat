@@ -6,7 +6,7 @@ $(document).ready(function(){
         var messageElem = $('#subscribe'),
             height = 0,
             date = new Date();
-        messageElem.append($('<p>').html('[' + date.toLocaleTimeString() + '] ' + message + '\n'));
+        messageElem.append($('<p>').html('[' + date.toLocaleTimeString({hour12:false}) + '] ' + message + '\n'));
         messageElem.find('p').each(function(i, value){
             height += parseInt($(this).height());
         });

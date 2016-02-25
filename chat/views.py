@@ -9,8 +9,8 @@ class ChatList(web.View):
     @aiohttp_jinja2.template('chat/index.html')
     async def get(self):
         message = Message(self.request.db)
-        messages = message.get_messages()
-        return {'message': messages}
+        messages = await message.get_messages()
+        return {'messages': messages}
 
 
 class WebSocket(web.View):
@@ -31,6 +31,9 @@ class WebSocket(web.View):
                 if msg.data == 'close':
                     await ws.close()
                 else:
+                    message = Message(self.request.db)
+                    result = await message.save(user=login, msg=msg.data)
+                    print(result)
                     for _ws in self.request.app['websockets']:
                         _ws.send_str('(%s) %s' % (login, msg.data))
             elif msg.tp == MsgType.error:

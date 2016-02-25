@@ -10,7 +10,7 @@ Main Chat page
 {% block content %}
 <div id='subscribe'>
     {% for mes in messages%}
-        <p>{{ mes['msg'] }}</p>
+    <p>[{{ mes['time'].strftime('%H:%M:%S') }}] ({{ mes['user'] }}) {{ mes['msg'] }}</p>
     {% endfor %}
 </div>
     <p>

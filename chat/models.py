@@ -8,14 +8,11 @@ class Message():
         print(db, MESSAGE_COLLECTION)
         self.collection = db[MESSAGE_COLLECTION]
 
-    async def save(self, **kw):
-        user = kw.get('user')
-        msg = kw.get('msg')
+    async def save(self, user, msg, **kw):
         result = await self.collection.insert({'user': user, 'msg': msg, 'time': datetime.now()})
         return result
 
     async def get_messages(self):
-        print(self.collection)
-        messages = await self.collection.find({})
-        print(messages)
-        return messages
+        print(self.collection, 'start get_messages')
+        messages = self.collection.find().sort([('time', 1)])
+        return await messages.to_list(length=None)
