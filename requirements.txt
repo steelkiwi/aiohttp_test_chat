@@ -2,6 +2,8 @@ aiohttp
 aiohttp_debugtoolbar
 aiohttp_jinja2
 aiohttp_session[secure]
+cffi
+cryptography
 envparse
 ipython
 ipdb
