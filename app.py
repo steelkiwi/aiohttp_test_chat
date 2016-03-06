@@ -9,6 +9,7 @@ from aiohttp import web
 
 from routes import routes
 from middlewares import db_handler, authorize
+from motor import motor_asyncio as ma
 from settings import *
 
 
@@ -21,6 +22,7 @@ async def shutdown(server, app, handler):
 
     server.close()
     await server.wait_closed()
+    app.client.close()  # database connection close
     await app.shutdown()
     await handler.finish_connections(10.0)
     await app.cleanup()
@@ -45,6 +47,10 @@ async def init(loop):
         app.router.add_route(route[0], route[1], route[2], name=route[3])
     app.router.add_static('/static', 'static', name='static')
     # end route part
+    # db connect
+    app.client = ma.AsyncIOMotorClient(MONGO_HOST)
+    app.db = app.client[MONGO_DB_NAME]
+    # end db connect
     app.on_shutdown.append(on_shutdown)
 
     serv_generator = loop.create_server(handler, SITE_HOST, SITE_PORT)

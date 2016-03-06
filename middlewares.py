@@ -1,6 +1,5 @@
 from aiohttp import web
 from aiohttp_session import get_session
-from motor import motor_asyncio as ma
 from settings import *
 
 
@@ -10,12 +9,8 @@ async def db_handler(app, handler):
             response = await handler(request)
             return response
 
-        client = ma.AsyncIOMotorClient(MONGO_HOST)
-        db = client[MONGO_DB_NAME]
-        print(db, 'db end')
-        request.db = db
+        request.db = app.db
         response = await handler(request)
-        client.close()
         return response
     return middleware
 
