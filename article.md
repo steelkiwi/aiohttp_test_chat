@@ -38,9 +38,9 @@ Handler - так называемая сорутина, объект, котор
 другие объекты ждут своей очереди. В данном случае другие объекты будут обрабатываться, 
 пока не придёт ответ из базы. Но для реализации этого нужен асинхронный драйвер. 
 На данный момент для aiohttp реализованы [ асинхронные драйвера и обёртки ]( https://github.com/aio-libs/ ) для большинства популярных баз данных ( [ postgresql ]( https://github.com/aio-libs/aiopg ), [ mysql ]( https://github.com/aio-libs/aiomysql ), [ redis ](https://github.com/aio-libs/aioredis)) 
-Для mongodb есть [ Motor ]( http://motor.readthedocs.org/en/stable/ ), который я буду использовать в своём чате.
+Для mongodb есть [ Motor ]( http://motor.readthedocs.org/en/stable/ ), который используется в моем чате.
 
-Точкой входа для моего чата служит файл [**app.py**](https://github.com/Crandel/aiohttp/blob/master/app.py). В нем создаётся объект app
+Точкой входа для чата служит файл [**app.py**](https://github.com/Crandel/aiohttp/blob/master/app.py). В нем создаётся объект app.
 
 ```python
 import asyncio
@@ -64,7 +64,7 @@ app.router.add_route('GET', '/{name}', handler)
 ```
 Вот кстати [ объяснение ] (http://asvetlov.blogspot.com/2014/10/flask_20.html) Светлова почему именно так реализовано.
 
-Я вынес заполнение путей(route) в отдельный файл [routes.py](https://github.com/Crandel/aiohttp/blob/master/routes.py)
+Заполнение путей(route) вынесено в отдельный файл [routes.py](https://github.com/Crandel/aiohttp/blob/master/routes.py).
 ```python
 from chat.views import ChatList, WebSocket
 from auth.views import Login, SignIn, SignOut
@@ -80,7 +80,7 @@ routes = [
 Первый элемент - http метод, далее расположен url, третьим в кортеже идёт объект handler, 
 и напоследок - имя пути, чтобы удобно было его вызывать в коде.
 
-Далее я импортирую список routes в app.py и заполняю пути простым циклом пути в приложение
+Далее импортируется список routes в app.py и заполняются пути простым циклом в приложение.
 ```python
 from routes import routes
 
@@ -95,7 +95,7 @@ __Handlers, Request and Response__
 что касается пользователей, авторизации, обработка создания пользователя и его входа.
 А в папке [chat](https://github.com/Crandel/aiohttp/tree/master/chat) находиться логика работы чата соответственно.
 В aiohttp можно реализовать [handler](http://aiohttp.readthedocs.org/en/stable/web.html#handler) в качестве как функции, так и класса.
-Я выбрал реализацию через класс
+Я выбрал реализацию через класс.
 ```python
 class Login(web.View):
 
@@ -106,7 +106,7 @@ class Login(web.View):
             raise web.HTTPFound(url)
         return b'Please enter login or email'
 ```
-Про сессии я расскажу ниже, а все остальное думаю понятно и так. Хочу заметить,
+Про сессии будет написано ниже, а все остальное думаю понятно и так. Хочу заметить,
 что переадресация происходит либо возвратом(return) либо выбросом исключения в виде объекта
 web.HTTPFound(), которому передаётся путь параметром.
 Http методы в классе реализуются через асинхронные функции get, post и тд.
@@ -117,7 +117,7 @@ data = await self.request.post()
 
 __Настройки конфигурации__
 
-Все настройки я храню в файле [settings.py](https://github.com/Crandel/aiohttp/blob/master/settings.py).
+Все настройки хранятся в файле [settings.py](https://github.com/Crandel/aiohttp/blob/master/settings.py).
 Для хранения секретных данных я использую [envparse](https://github.com/rconradharris/envparse).
 Данная утилита позволяет читать данные из переменных окружения, а также парсить специальный файл, где эти переменные хранятся.
 ```python
@@ -126,12 +126,13 @@ if isfile('.env'):
 ```
 Во первых, это было необходимо для поднятия проекта на Heroku, а во вторых, это оказалось ещё и очень удобно.
 Сначала я использовал локальную базу, а потом тестировал на удалённой,
-и переключение состояло из изменения всего одной строки в файле .env
+и переключение состояло из изменения всего одной строки в файле .env.
 
 __Middlewares__
 
-При инициализации приложения можно задавать middleware. Я вынес их в отдельный [файл](https://github.com/Crandel/aiohttp/blob/master/middlewares.py).
-Реализация стандартная - функция декоратор, в которой можно делать проверки или любые другие действия с запросом
+При инициализации приложения можно задавать middleware. Здесь они вынесены в отдельный [файл](https://github.com/Crandel/aiohttp/blob/master/middlewares.py).
+Реализация стандартная - функция декоратор, в которой можно делать проверки или любые другие действия с запросом.
+
 *Пример проверки на авторизацию*
 ```python
 async def authorize(app, handler):
@@ -155,7 +156,7 @@ async def authorize(app, handler):
 
     return middleware
 ```
-Также я сделал middleware для подключения базы данных
+Также я сделал middleware для подключения базы данных.
 ```python
 async def db_handler(app, handler):
     async def middleware(request):
@@ -172,13 +173,13 @@ async def db_handler(app, handler):
 
 __Базы данных__
 
-Для чата я использовал Mongodb и асинхронный драйвер Motor.
-Подключение к базе происходит при инициализации приложения
+Для чата используется Mongodb и асинхронный драйвер Motor.
+Подключение к базе происходит при инициализации приложения.
 ```python
 app.client = ma.AsyncIOMotorClient(MONGO_HOST)
 app.db = app.client[MONGO_DB_NAME]
 ```
-А закрытие соединения происходит в специальной функции shutdown
+А закрытие соединения происходит в специальной функции shutdown.
 ```python
 async def shutdown(server, app, handler):
 
@@ -189,9 +190,9 @@ async def shutdown(server, app, handler):
     await handler.finish_connections(10.0)
     await app.cleanup()
 ```
-Хочу заметить, что в случае асинхронного сервера нужно корректно завершить все параллельные задачи
+Хочу заметить, что в случае асинхронного сервера нужно корректно завершить все параллельные задачи.
 
-Немного подробнее про создание event loop
+Немного подробнее про создание event loop.
 ```python
 loop = asyncio.get_event_loop()
 serv_generator, handler, app = loop.run_until_complete(init(loop))
@@ -206,7 +207,7 @@ finally:
     loop.close()
 print('Stop server end')
 ```
-Сама петля создаётся из asyncio
+Сама петля создаётся из asyncio.
 ```python
 serv_generator, handler, app = loop.run_until_complete(init(loop))
 ```
@@ -237,19 +238,19 @@ class Message():
         messages = self.collection.find().sort([('time', 1)])
         return await messages.to_list(length=None)
 ```
-Хотя у меня не задействована ОРМ, запросы к базе мне удобнее делать в отдельных классах.
-В папке chat я создал файл [models.py](https://github.com/Crandel/aiohttp/blob/master/chat/models.py), где находится класс Message.
+Хотя у меня не задействована ОРМ, запросы к базе удобнее делать в отдельных классах.
+В папке chat был создан файл [models.py](https://github.com/Crandel/aiohttp/blob/master/chat/models.py), где находится класс Message.
 В методе get_messages создаётся запрос, который достаёт все сохранённые сообщения, отсортированные по времени.
 В методе save создаётся запрос на сохранение сообщения в базу.
 
 __Шаблоны__
 
-Для aiohttp написано несколько асинхронных оберток для популярных шаблонизаторов, в частности [aiohttp_jinja2](https://github.com/aio-libs/aiohttp_jinja2) и [aiohttp_mako](https://github.com/aio-libs/aiohttp_mako). Для своего чата использую jinja2
+Для aiohttp написано несколько асинхронных оберток для популярных шаблонизаторов, в частности [aiohttp_jinja2](https://github.com/aio-libs/aiohttp_jinja2) и [aiohttp_mako](https://github.com/aio-libs/aiohttp_mako). Для чата использую jinja2.
 ```python
 aiohttp_jinja2.setup(app, loader=jinja2.FileSystemLoader('templates'))
 ```
 Вот так поддержка шаблонов инициализируется в приложении.
-FileSystemLoader('templates') указывает jinja2 что наши шаблоны лежать в папке [templates](https://github.com/Crandel/aiohttp/tree/master/templates)
+FileSystemLoader('templates') указывает jinja2 что наши шаблоны лежать в папке [templates](https://github.com/Crandel/aiohttp/tree/master/templates).
 ```python
 class ChatList(web.View):
     @aiohttp_jinja2.template('chat/index.html')
@@ -285,7 +286,7 @@ __Статика__
 ```python
 app.router.add_static('/static', 'static', name='static')
 ```
-Чтобы задействовать её в шаблоне, нужно достать её из app
+Чтобы задействовать её в шаблоне, нужно достать её из app.
 ```python
 <script src="{{ app.router.static.url(filename='js/main.js') }}"></script>
 ```
@@ -293,9 +294,9 @@ app.router.add_static('/static', 'static', name='static')
 
 __WebSocket__
 
-Наконец-то мы добрались до самой вкусной части aiohttp)
-Реализация сокетов очень проста
-В javascript я добавил минимально необходимый функционал для работы сокета
+Наконец-то мы добрались до самой вкусной части aiohttp).
+Реализация сокетов очень проста.
+В javascript я добавил минимально необходимый функционал для работы сокета.
 ```javascript
 try{
     var sock = new WebSocket('ws://' + window.location.host + '/ws');
@@ -408,7 +409,7 @@ __Выгрузка на Heroku__
 Тестовый [чат](https://secure-escarpment-46948.herokuapp.com/) я выложил на Heroku, для наглядной демонстрации.
 При деплое возникло несколько проблем, в частности для использования их внутренней базы mongodb нужно было заполнить кучу информации, что делать мне было лень, поэтому воспользовался услугами [MongoLab](https://mlab.com/) и создал там базу.
 Далее были проблемы с установкой самого приложения. Для установки cryptography нужно было явно указывать его в requirements.txt.
-Также для указания версии python нужно создавать в корне проекта файл [runtime.txt](https://github.com/Crandel/aiohttp/blob/master/runtime.txt)
+Также для указания версии python нужно создавать в корне проекта файл [runtime.txt](https://github.com/Crandel/aiohttp/blob/master/runtime.txt).
 
 __Выводы__
 
