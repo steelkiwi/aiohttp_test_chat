@@ -243,6 +243,7 @@ class Message():
 В методе save создаётся запрос на сохранение сообщения в базу.
 
 __Шаблоны__
+
 Для aiohttp написано несколько асинхронных оберток для популярных шаблонизаторов, в частности [aiohttp_jinja2](https://github.com/aio-libs/aiohttp_jinja2) и [aiohttp_mako](https://github.com/aio-libs/aiohttp_mako). Для своего чата использую jinja2
 ```python
 aiohttp_jinja2.setup(app, loader=jinja2.FileSystemLoader('templates'))
