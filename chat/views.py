@@ -3,6 +3,7 @@ from aiohttp_session import get_session
 from aiohttp import web, MsgType
 from auth.models import User
 from chat.models import Message
+from settings import log
 
 
 class ChatList(web.View):
@@ -33,15 +34,15 @@ class WebSocket(web.View):
                 else:
                     message = Message(self.request.db)
                     result = await message.save(user=login, msg=msg.data)
-                    print(result)
+                    log.debug(result)
                     for _ws in self.request.app['websockets']:
                         _ws.send_str('(%s) %s' % (login, msg.data))
             elif msg.tp == MsgType.error:
-                print('ws connection closed with exception %s' % ws.exception())
+                log.debug('ws connection closed with exception %s' % ws.exception())
 
         self.request.app['websockets'].remove(ws)
         for _ws in self.request.app['websockets']:
             _ws.send_str('%s disconected' % login)
-        print('websocket connection closed')
+        log.debug('websocket connection closed')
 
         return ws

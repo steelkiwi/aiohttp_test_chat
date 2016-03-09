@@ -1,5 +1,6 @@
 #! /usr/bin/env python
 import asyncio
+import logging
 import aiohttp_jinja2
 import aiohttp_debugtoolbar
 import jinja2
@@ -59,12 +60,12 @@ async def init(loop):
 loop = asyncio.get_event_loop()
 serv_generator, handler, app = loop.run_until_complete(init(loop))
 serv = loop.run_until_complete(serv_generator)
-print('start server', serv.sockets[0].getsockname())
+log.debug('start server', serv.sockets[0].getsockname())
 try:
     loop.run_forever()
 except KeyboardInterrupt:
-    print(' Stop server begin')
+    log.debug(' Stop server begin')
 finally:
     loop.run_until_complete(shutdown(serv, app, handler))
     loop.close()
-print('Stop server end')
+log.debug('Stop server end')

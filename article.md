@@ -2,14 +2,14 @@
 __Оглавление__
 * *Введение*
 * *Структура*
-* *Роуты*
+* *Routes*
 * *Handlers, Request and Response*
 * *Настройки конфигурации*
 * *Middlewares*
 * *Базы данных*
 * *Шаблоны*
 * *Сессии, авторизация*
-* *Статика*
+* *Static*
 * *WebSocket*
 * *Выгрузка на Heroku*
 
@@ -30,10 +30,10 @@ __Структура__
 
 Чтобы протестировать по максимуму все возможности aiohttp, я попытался разработать простой чат
 на вебсокетах.Основой aiohttp является бесконечный loop, в котором крутятся handlers. 
-Handler - так называемая сорутина, объект, который не блокирует ввод/вывод(I/O). 
+Handler - так называемая coroutine, объект, который не блокирует ввод/вывод(I/O). 
 Данный тип объектов появился в python 3.4 в библиотеке asyncio. Пока не произойдут все 
 вычисления в данном объекте, он как бы засыпает, а в это время интерпретатор может обрабатывать 
-другие объекты. Чтобы было понятно, наведу пример. Зачастую все задержки сервера происходят, 
+другие объекты. Чтобы было понятно, приведу пример. Зачастую все задержки сервера происходят, 
 когда он ожидает ответа от базы данных и пока этот ответ не придёт и не обработается, 
 другие объекты ждут своей очереди. В данном случае другие объекты будут обрабатываться, 
 пока не придёт ответ из базы. Но для реализации этого нужен асинхронный драйвер. 
@@ -56,15 +56,15 @@ app = web.Application(loop=loop, middlewares=[
 ```
 Как вы видите, при инициализации в app передаётся loop, а также список middleware, о котором я расскажу попозже.
 
-__Роуты__
+__Routes__
 
-В отличии от flask на который aiohttp очень похож, роуты добавляются в уже инициализированное приложение app.
+В отличии от flask на который aiohttp очень похож, routes добавляются в уже инициализированное приложение app.
 ```python
 app.router.add_route('GET', '/{name}', handler)
 ```
 Вот кстати [ объяснение ] (http://asvetlov.blogspot.com/2014/10/flask_20.html) Светлова почему именно так реализовано.
 
-Заполнение путей(route) вынесено в отдельный файл [routes.py](https://github.com/Crandel/aiohttp/blob/master/routes.py).
+Заполнение routes вынесено в отдельный файл [routes.py](https://github.com/Crandel/aiohttp/blob/master/routes.py).
 ```python
 from chat.views import ChatList, WebSocket
 from auth.views import Login, SignIn, SignOut
@@ -78,9 +78,9 @@ routes = [
 ]
 ```
 Первый элемент - http метод, далее расположен url, третьим в кортеже идёт объект handler, 
-и напоследок - имя пути, чтобы удобно было его вызывать в коде.
+и напоследок - имя route, чтобы удобно было его вызывать в коде.
 
-Далее импортируется список routes в app.py и заполняются пути простым циклом в приложение.
+Далее импортируется список routes в app.py и они заполняются простым циклом в приложение.
 ```python
 from routes import routes
 
@@ -197,31 +197,31 @@ async def shutdown(server, app, handler):
 loop = asyncio.get_event_loop()
 serv_generator, handler, app = loop.run_until_complete(init(loop))
 serv = loop.run_until_complete(serv_generator)
-print('start server', serv.sockets[0].getsockname())
+log.debug('start server', serv.sockets[0].getsockname())
 try:
     loop.run_forever()
 except KeyboardInterrupt:
-    print(' Stop server begin')
+    log.debug(' Stop server begin')
 finally:
     loop.run_until_complete(shutdown(serv, app, handler))
     loop.close()
-print('Stop server end')
+log.debug('Stop server end')
 ```
-Сама петля создаётся из asyncio.
+Сам loop создаётся из asyncio.
 ```python
 serv_generator, handler, app = loop.run_until_complete(init(loop))
 ```
-Метод run_until_complete добавляет корутины в петлю. В данном случае он добавляет функцию [инициализации](https://github.com/Crandel/aiohttp/blob/master/app.py#L31) приложения.
+Метод run_until_complete добавляет coriutines в loop. В данном случае он добавляет функцию [инициализации](https://github.com/Crandel/aiohttp/blob/master/app.py#L31) приложения.
 ```python
 try:
     loop.run_forever()
 except KeyboardInterrupt:
-    print(' Stop server begin')
+    log.debug(' Stop server begin')
 finally:
     loop.run_until_complete(shutdown(serv, app, handler))
     loop.close()
 ```
-Собственно сама реализация бесконечного цикла, который прерывается в случае исключения. Перед закрытием вызывается функция shutdown, которая тушит все соединения и корректно останавливает сервер.
+Собственно сама реализация бесконечного цикла, который прерывается в случае исключения. Перед закрытием вызывается функция shutdown, которая завершает все соединения и корректно останавливает сервер.
 
 Теперь нам надо разобраться, как делать запросы, извлекать и изменять данные
 ```python
@@ -245,7 +245,7 @@ class Message():
 
 __Шаблоны__
 
-Для aiohttp написано несколько асинхронных оберток для популярных шаблонизаторов, в частности [aiohttp_jinja2](https://github.com/aio-libs/aiohttp_jinja2) и [aiohttp_mako](https://github.com/aio-libs/aiohttp_mako). Для чата использую jinja2.
+Для aiohttp написано несколько асинхронных обёрток для популярных шаблонизаторов, в частности [aiohttp_jinja2](https://github.com/aio-libs/aiohttp_jinja2) и [aiohttp_mako](https://github.com/aio-libs/aiohttp_mako). Для чата использую jinja2.
 ```python
 aiohttp_jinja2.setup(app, loader=jinja2.FileSystemLoader('templates'))
 ```
@@ -259,12 +259,12 @@ class ChatList(web.View):
         messages = await message.get_messages()
         return {'messages': messages}
 ```
-Через декоратор мы указываем, какой [шаблон](https://github.com/Crandel/aiohttp/blob/master/templates/chat/index.html) будем использовать в вьюхе, а для заполнения контекста, возвращаем словарь с переменными, с которыми потом работаем в шаблоне.
+Через декоратор мы указываем, какой [шаблон](https://github.com/Crandel/aiohttp/blob/master/templates/chat/index.html) будем использовать во views, а для заполнения контекста, возвращаем словарь с переменными, с которыми потом работаем в шаблоне.
 
 __Сессии, авторизация__
 
 Для работы с сессиями есть библиотека [aiohttp_session](https://github.com/aio-libs/aiohttp_session).
-Есть возможность хранить сессии в редисе или в куках в зашифрованном виде, используя cryptography.
+Есть возможность хранить сессии в Redic или в cookies в зашифрованном виде, используя cryptography.
 Способ хранения указывается ещё при установке библиотеки.
 ```python
 aiohttp_session[secure]
@@ -280,9 +280,9 @@ session = await get_session(request)
 
 Для авторизации пользователя, добавляем в сессию его id, а потом в middleware проверяем его наличие. Конечно для безопасности нужно больше проверок, но для тестирования концепции хватит и этого.
 
-__Статика__
+__Static__
 
-Статика подключается отдельным роутом при инициализации приложения.
+Папка с статическим контентом подключается отдельным route при инициализации приложения.
 ```python
 app.router.add_static('/static', 'static', name='static')
 ```
@@ -295,8 +295,8 @@ app.router.add_static('/static', 'static', name='static')
 __WebSocket__
 
 Наконец-то мы добрались до самой вкусной части aiohttp).
-Реализация сокетов очень проста.
-В javascript я добавил минимально необходимый функционал для работы сокета.
+Реализация socket очень проста.
+В javascript я добавил минимально необходимый функционал для его работы.
 ```javascript
 try{
     var sock = new WebSocket('ws://' + window.location.host + '/ws');
@@ -361,7 +361,7 @@ sock.onerror = function(error){
     showMessage(error);
 }
 ```
-Для реализации сервера я использую вьюху WebSocket
+Для реализации серверной части я использую class WebSocket
 ```python
 class WebSocket(web.View):
     async def get(self):
@@ -383,40 +383,40 @@ class WebSocket(web.View):
                 else:
                     message = Message(self.request.db)
                     result = await message.save(user=login, msg=msg.data)
-                    print(result)
+                    log.debug(result)
                     for _ws in self.request.app['websockets']:
                         _ws.send_str('(%s) %s' % (login, msg.data))
             elif msg.tp == MsgType.error:
-                print('ws connection closed with exception %s' % ws.exception())
+                log.debug('ws connection closed with exception %s' % ws.exception())
 
         self.request.app['websockets'].remove(ws)
         for _ws in self.request.app['websockets']:
             _ws.send_str('%s disconected' % login)
-        print('websocket connection closed')
+        log.debug('websocket connection closed')
 
         return ws
 ```
-Сам сокет создаётся используя функцию WebSocketResponse().
+Сам socket создаётся используя функцию WebSocketResponse().
 Обязательно перед использованием его нужно "приготовить".
-Список открытых сокетов у меня хранится в приложении(чтобы при закрытии сервера их можно было корректно закрыть).
+Список открытых sockets у меня хранится в приложении(чтобы при закрытии сервера их можно было корректно закрыть).
 При подключении нового пользователя, все участники получают уведомление о том что новый участник присоединился к чату.
 Далее мы ожидаем сообщения от пользователя. Если оно валидно, мы сохраняем его в базе данных и отсылаем другим участникам чата.
-Когда сокет закрывается, мы удаляем его из списка сокетов и оповещаем чат, что его покинул один из участников.
-Очень простая реализация, визуально в синхронним стиле, без кучи колбеков, как в торнадо к примеру. Бери и пользуйся).
+Когда socket закрывается, мы удаляем его из списка и оповещаем чат, что его покинул один из участников.
+Очень простая реализация, визуально в синхронном стиле, без большого количества callbacks, как в Tornado к примеру. Бери и пользуйся).
 
 __Выгрузка на Heroku__
 
 Тестовый [чат](https://secure-escarpment-46948.herokuapp.com/) я выложил на Heroku, для наглядной демонстрации.
-При деплое возникло несколько проблем, в частности для использования их внутренней базы mongodb нужно было заполнить кучу информации, что делать мне было лень, поэтому воспользовался услугами [MongoLab](https://mlab.com/) и создал там базу.
+При установке возникло несколько проблем, в частности для использования их внутренней базы mongodb нужно было вносить данные кредитной карты, что делать мне не хотелось, поэтому воспользовался услугами [MongoLab](https://mlab.com/) и создал там базу.
 Далее были проблемы с установкой самого приложения. Для установки cryptography нужно было явно указывать его в requirements.txt.
 Также для указания версии python нужно создавать в корне проекта файл [runtime.txt](https://github.com/Crandel/aiohttp/blob/master/runtime.txt).
 
 __Выводы__
 
-В целом создание чата , изучение aiohttp, разбор работы сокетов и некоторых других технологий, с которыми я до этого не работал, заняло у меня где-то около 3 недель работы по вечерам и редко на выходных. 
+В целом создание чата , изучение aiohttp, разбор работы sockets и некоторых других технологий, с которыми я до этого не работал, заняло у меня где-то около 3 недель работы по вечерам и редко на выходных. 
 Документация в aiohttp довольно неплохая, много асинхронных драйверов и обёрток уже готовы для тестирования.
-Возможно для продакшена пока не все готово, но развитие идёт очень активно (за 3 недели aiohttp обновилась с версии 0.19 до 0.21).
-Если нужно добавить в проект сокеты, этот вариант отлично подойдёт, чтобы не тащить тяжёлую tornado в зависимости.
+Возможно для production пока не все готово, но развитие идёт очень активно (за 3 недели aiohttp обновилась с версии 0.19 до 0.21).
+Если нужно добавить в проект sockets, этот вариант отлично подойдёт, чтобы не добавлять тяжёлую Tornado в зависимости.
 
 __Ссылки__
 

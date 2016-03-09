@@ -1,6 +1,9 @@
 from os.path import isfile
 from envparse import env
+import logging
 
+
+log = logging.basicConfig(filename='app.log', level=logging.DEBUG)
 
 if isfile('.env'):
     env.read_envfile('.env')
