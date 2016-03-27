@@ -1,6 +1,5 @@
 #! /usr/bin/env python
 import asyncio
-import logging
 import aiohttp_jinja2
 import aiohttp_debugtoolbar
 import jinja2
