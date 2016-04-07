@@ -59,7 +59,7 @@ async def init(loop):
 loop = asyncio.get_event_loop()
 serv_generator, handler, app = loop.run_until_complete(init(loop))
 serv = loop.run_until_complete(serv_generator)
-log.debug('start server', serv.sockets[0].getsockname())
+log.debug('start server %s' % str(serv.sockets[0].getsockname()))
 try:
     loop.run_forever()
 except KeyboardInterrupt:

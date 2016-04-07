@@ -11,3 +11,5 @@ env
 init.vim
 .vim/
 .vimrc
+
+*.log

@@ -40,7 +40,7 @@ Handler - так называемая coroutine, объект, который н
 На данный момент для aiohttp реализованы [ асинхронные драйвера и обёртки ]( https://github.com/aio-libs/ ) для большинства популярных баз данных ( [ postgresql ]( https://github.com/aio-libs/aiopg ), [ mysql ]( https://github.com/aio-libs/aiomysql ), [ redis ](https://github.com/aio-libs/aioredis)) 
 Для mongodb есть [ Motor ]( http://motor.readthedocs.org/en/stable/ ), который используется в моем чате.
 
-Точкой входа для чата служит файл [**app.py**](https://github.com/Crandel/aiohttp/blob/master/app.py). В нем создаётся объект app.
+Точкой входа для чата служит файл [**app.py**](https://github.com/steelkiwi/aiohttp_test_chat/blob/master/app.py). В нем создаётся объект app.
 
 ```python
 import asyncio
@@ -64,7 +64,7 @@ app.router.add_route('GET', '/{name}', handler)
 ```
 Вот кстати [ объяснение ] (http://asvetlov.blogspot.com/2014/10/flask_20.html) Светлова почему именно так реализовано.
 
-Заполнение routes вынесено в отдельный файл [routes.py](https://github.com/Crandel/aiohttp/blob/master/routes.py).
+Заполнение routes вынесено в отдельный файл [routes.py](https://github.com/steelkiwi/aiohttp_test_chat/blob/master/routes.py).
 ```python
 from chat.views import ChatList, WebSocket
 from auth.views import Login, SignIn, SignOut
@@ -91,9 +91,9 @@ for route in routes:
 
 __Handlers, Request and Response__
 
-Я решил обработку запросов сделать по примеру Django фреймворка. В папке [auth](https://github.com/Crandel/aiohttp/tree/master/auth) находиться все, 
+Я решил обработку запросов сделать по примеру Django фреймворка. В папке [auth](https://github.com/steelkiwi/aiohttp_test_chat/tree/master/auth) находиться все, 
 что касается пользователей, авторизации, обработка создания пользователя и его входа.
-А в папке [chat](https://github.com/Crandel/aiohttp/tree/master/chat) находиться логика работы чата соответственно.
+А в папке [chat](https://github.com/steelkiwi/aiohttp_test_chat/tree/master/chat) находиться логика работы чата соответственно.
 В aiohttp можно реализовать [handler](http://aiohttp.readthedocs.org/en/stable/web.html#handler) в качестве как функции, так и класса.
 Я выбрал реализацию через класс.
 ```python
@@ -117,7 +117,7 @@ data = await self.request.post()
 
 __Настройки конфигурации__
 
-Все настройки хранятся в файле [settings.py](https://github.com/Crandel/aiohttp/blob/master/settings.py).
+Все настройки хранятся в файле [settings.py](https://github.com/steelkiwi/aiohttp_test_chat/blob/master/settings.py).
 Для хранения секретных данных я использую [envparse](https://github.com/rconradharris/envparse).
 Данная утилита позволяет читать данные из переменных окружения, а также парсить специальный файл, где эти переменные хранятся.
 ```python
@@ -130,7 +130,7 @@ if isfile('.env'):
 
 __Middlewares__
 
-При инициализации приложения можно задавать middleware. Здесь они вынесены в отдельный [файл](https://github.com/Crandel/aiohttp/blob/master/middlewares.py).
+При инициализации приложения можно задавать middleware. Здесь они вынесены в отдельный [файл](https://github.com/steelkiwi/aiohttp_test_chat/blob/master/middlewares.py).
 Реализация стандартная - функция декоратор, в которой можно делать проверки или любые другие действия с запросом.
 
 *Пример проверки на авторизацию*
@@ -211,7 +211,7 @@ log.debug('Stop server end')
 ```python
 serv_generator, handler, app = loop.run_until_complete(init(loop))
 ```
-Метод run_until_complete добавляет coriutines в loop. В данном случае он добавляет функцию [инициализации](https://github.com/Crandel/aiohttp/blob/master/app.py#L31) приложения.
+Метод run_until_complete добавляет coriutines в loop. В данном случае он добавляет функцию [инициализации](https://github.com/steelkiwi/aiohttp_test_chat/blob/master/app.py#L31) приложения.
 ```python
 try:
     loop.run_forever()
@@ -239,7 +239,7 @@ class Message():
         return await messages.to_list(length=None)
 ```
 Хотя у меня не задействована ОРМ, запросы к базе удобнее делать в отдельных классах.
-В папке chat был создан файл [models.py](https://github.com/Crandel/aiohttp/blob/master/chat/models.py), где находится класс Message.
+В папке chat был создан файл [models.py](https://github.com/steelkiwi/aiohttp_test_chat/blob/master/chat/models.py), где находится класс Message.
 В методе get_messages создаётся запрос, который достаёт все сохранённые сообщения, отсортированные по времени.
 В методе save создаётся запрос на сохранение сообщения в базу.
 
@@ -250,7 +250,7 @@ __Шаблоны__
 aiohttp_jinja2.setup(app, loader=jinja2.FileSystemLoader('templates'))
 ```
 Вот так поддержка шаблонов инициализируется в приложении.
-FileSystemLoader('templates') указывает jinja2 что наши шаблоны лежать в папке [templates](https://github.com/Crandel/aiohttp/tree/master/templates).
+FileSystemLoader('templates') указывает jinja2 что наши шаблоны лежать в папке [templates](https://github.com/steelkiwi/aiohttp_test_chat/tree/master/templates).
 ```python
 class ChatList(web.View):
     @aiohttp_jinja2.template('chat/index.html')
@@ -259,7 +259,7 @@ class ChatList(web.View):
         messages = await message.get_messages()
         return {'messages': messages}
 ```
-Через декоратор мы указываем, какой [шаблон](https://github.com/Crandel/aiohttp/blob/master/templates/chat/index.html) будем использовать во views, а для заполнения контекста, возвращаем словарь с переменными, с которыми потом работаем в шаблоне.
+Через декоратор мы указываем, какой [шаблон](https://github.com/steelkiwi/aiohttp_test_chat/blob/master/templates/chat/index.html) будем использовать во views, а для заполнения контекста, возвращаем словарь с переменными, с которыми потом работаем в шаблоне.
 
 __Сессии, авторизация__
 
@@ -409,7 +409,7 @@ __Выгрузка на Heroku__
 Тестовый [чат](https://secure-escarpment-46948.herokuapp.com/) я выложил на Heroku, для наглядной демонстрации.
 При установке возникло несколько проблем, в частности для использования их внутренней базы mongodb нужно было вносить данные кредитной карты, что делать мне не хотелось, поэтому воспользовался услугами [MongoLab](https://mlab.com/) и создал там базу.
 Далее были проблемы с установкой самого приложения. Для установки cryptography нужно было явно указывать его в requirements.txt.
-Также для указания версии python нужно создавать в корне проекта файл [runtime.txt](https://github.com/Crandel/aiohttp/blob/master/runtime.txt).
+Также для указания версии python нужно создавать в корне проекта файл [runtime.txt](https://github.com/steelkiwi/aiohttp_test_chat/blob/master/runtime.txt).
 
 __Выводы__
 
@@ -420,6 +420,14 @@ __Выводы__
 
 __Ссылки__
 
-[Github](https://github.com/Crandel/aiohttp)
+* [Github](https://github.com/steelkiwi/aiohttp_test_chat)
 
-[Aiohttp](http://aiohttp.readthedocs.org/en/stable/)
+* [Aiohttp](http://aiohttp.readthedocs.org/en/stable/)
+
+* [Aiohttp libs](https://github.com/aio-libs)
+
+* [Mongodb](https://www.mongodb.org/)
+
+* [Motor](https://motor.readthedocs.org/en/stable/)
+
+* [envparse](https://github.com/rconradharris/envparse)
