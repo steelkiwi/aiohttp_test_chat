@@ -1,4 +1,4 @@
-## Simple chat
+## Python aiohttp - testing with a simple chat
 
 This repo contains examples from article in [our blog](http://steelkiwi.com/blog/an-example-of-a-simple-chat-written-in-aiohttp/).
 
